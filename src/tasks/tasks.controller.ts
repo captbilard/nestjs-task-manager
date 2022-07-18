@@ -8,6 +8,8 @@ import {
   Patch,
   Query,
   UseGuards,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { TaskStatus } from './task-status.enum';
 import { TasksService } from './tasks.service';
@@ -29,8 +31,12 @@ export class TasksController {
     return this.taskService.getTaskById(id);
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Post()
-  createTask(@Body() body: TaskDto, @GetUser() user:User): Promise<TaskEntity> {
+  createTask(
+    @Body() body: TaskDto,
+    @GetUser() user: User,
+  ): Promise<TaskEntity> {
     return this.taskService.create(body, user);
   }
 
