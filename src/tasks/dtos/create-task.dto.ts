@@ -7,7 +7,4 @@ export class TaskDto {
 
   @IsString()
   description: string;
-
-  @IsEnum(TaskStatus)
-  status: TaskStatus;
 }
