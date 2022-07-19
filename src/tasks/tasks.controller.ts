@@ -54,7 +54,10 @@ export class TasksController {
   }
 
   @Get()
-  getAllTask(@Query() taskFilter: GetTaskFiltersDto): Promise<TaskEntity[]> {
-    return this.taskService.getAllTask(taskFilter);
+  getAllTask(
+    @Query() taskFilter: GetTaskFiltersDto,
+    @GetUser() user: User,
+  ): Promise<TaskEntity[]> {
+    return this.taskService.getAllTask(taskFilter, user);
   }
 }

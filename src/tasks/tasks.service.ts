@@ -64,18 +64,24 @@ export class TasksService {
     return await this.taskRepository.save(task);
   }
 
-  async getAllTask(taskFilter: GetTaskFiltersDto): Promise<TaskEntity[]> {
+  async getAllTask(
+    taskFilter: GetTaskFiltersDto,
+    user: User,
+  ): Promise<TaskEntity[]> {
     const { status, search } = taskFilter;
 
     const query = this.taskRepository.createQueryBuilder('task');
+    query.andWhere({ user });
 
     if (status) {
       query.andWhere('task.status = :status', { status });
     }
 
     if (search) {
+      //take note of the parenthesis covering the entire query, this makes the query builder treat them all as one huge query instead of a seperated queries.
+      //Check older commit to have further understanding and the NestJs Zero to Hero course 75
       query.andWhere(
-        'LOWER(task.title) LIKE LOWER(:search) OR LOWER(task.description) LIKE LOWER(:search)',
+        '(LOWER(task.title) LIKE LOWER(:search) OR LOWER(task.description) LIKE LOWER(:search))',
         { search: `%${search}%` },
       );
     }
