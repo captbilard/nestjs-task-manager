@@ -27,8 +27,11 @@ export class TasksController {
   constructor(private taskService: TasksService) {}
 
   @Get('/:id')
-  getTask(@Param('id') id: string): Promise<TaskEntity> {
-    return this.taskService.getTaskById(id);
+  getTaskById(
+    @Param('id') id: string,
+    @GetUser() user: User,
+  ): Promise<TaskEntity> {
+    return this.taskService.getTaskById(id, user);
   }
 
   @UseInterceptors(ClassSerializerInterceptor)
@@ -41,16 +44,20 @@ export class TasksController {
   }
 
   @Delete('/:id')
-  deleteTask(@Param('id') id: string): Promise<TaskEntity | void> {
-    return this.taskService.removeTask(id);
+  deleteTask(
+    @Param('id') id: string,
+    @GetUser() user: User,
+  ): Promise<TaskEntity | void> {
+    return this.taskService.removeTask(id, user);
   }
 
   @Patch('/:id')
   updateTask(
     @Param('id') id: string,
     @Body('status') status: TaskStatus,
+    @GetUser() user: User,
   ): Promise<TaskEntity> {
-    return this.taskService.updateTaskStatus(id, status);
+    return this.taskService.updateTaskStatus(id, status, user);
   }
 
   @Get()

@@ -15,11 +15,13 @@ export class TasksService {
     private taskRepository: Repository<TaskEntity>,
   ) {}
 
-  async getTaskById(id: string): Promise<TaskEntity> {
-    const task = await this.taskRepository.findOne({ where: { id: id } });
+  async getTaskById(id: string, user: User): Promise<TaskEntity> {
+    const task = await this.taskRepository.findOne({
+      where: { id: id, user: user },
+    });
 
     if (!task) {
-      throw new NotFoundException(`Task with ${id} not found`);
+      throw new NotFoundException(`Task with id: "${id}" not found`);
     }
 
     return task;
@@ -37,7 +39,7 @@ export class TasksService {
     return await this.taskRepository.save(task);
   }
 
-  async removeTask(id: string): Promise<TaskEntity | void> {
+  async removeTask(id: string, user: User): Promise<TaskEntity | void> {
     //this gives more call to the db so it's not optimal
     // const task = await this.getTaskById(id);
 
@@ -48,7 +50,7 @@ export class TasksService {
     // return this.taskRepository.remove(task);
 
     // the second method is more optimal for les calls to the db
-    const result = await this.taskRepository.delete(id);
+    const result = await this.taskRepository.delete({ id, user });
 
     if (result.affected === 0) {
       throw new NotFoundException(`Task with id ${id} not found`);
@@ -57,8 +59,8 @@ export class TasksService {
     }
   }
 
-  async updateTaskStatus(id: string, status: TaskStatus) {
-    const task = await this.getTaskById(id);
+  async updateTaskStatus(id: string, status: TaskStatus, user: User) {
+    const task = await this.getTaskById(id, user);
     task.status = status;
 
     return await this.taskRepository.save(task);
